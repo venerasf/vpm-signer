@@ -1,25 +1,5 @@
 package main
 
-/*
-	Generate keys and output
-	./x -g -pb -pr -o
-	Generate private key and output into file.
-	./x -g -pr -o > bla.pem
-
-	Show pair key from file
-	./x -k key.pem -pr -pb -o
-	Show just public key
-	./x -k key.pem -pb -o
-
-	Sign file and encode signatute as base64. show it
-	./x -k key.pem -s -f go.mod -o -e b
-	Verify file
-	./x -k key.pem -f testfile.txt -v testfile.sig -o
-
-	Generate venera sign pack
-	./x -k key.pem -s -f testfile.txt -vnr
- */
-
 import (
 	"bytes"
 	"crypto/ecdsa"
@@ -46,6 +26,10 @@ func main() {
 	var ver = flag.String("v", "", "File with signature.")
 
 	var vnr = flag.Bool("vnr", false, "Venera signing.")
+
+	var eml = flag.String("email", "", "Email for the signature.")
+	var unm = flag.String("uname", "", "User name.")
+
 	flag.Parse()
 	
 	var keyPair ecdsa.PrivateKey
@@ -121,10 +105,10 @@ func main() {
 
 	// Venera sign
 	if *vnr {
-		t := time.Date(2021, 8, 15, 14, 30, 45, 100, time.Local)
+		t := time.Now() 
 		b := VNRPack(
-			"default <defalt@mail.com>",
-			t.Format("2006-1-2 15:4:5"),
+			*unm+" <"+*eml+">",
+			t.Format("2006-01-02 15:04:05.000000"),
 			base64.StdEncoding.EncodeToString(signBytes),
 		)
 		fmt.Print(string(b))
